@@ -1,0 +1,10 @@
+version: 1.0
+provider:
+  name: openfaas
+  gateway: http://127.0.0.1:8080
+functions:
+  go-http-echo:
+    lang: golang-http
+    handler: ./go-http-echo
+    image: subodhp/go-http-echo:latest
+

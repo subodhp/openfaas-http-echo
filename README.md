@@ -139,7 +139,7 @@ The service can also be exposed over NodePort or LoadBalancer depending upon the
 
 OpenFaaS UI can be accessed at http://127.0.0.1:8080/ui/ on localhost
 
-![](screenshots/UI Home.png)
+![](screenshots/UI_Home.png)
 
 Change the prometheus to be exported over NodePort/LoadBalancer service types to access it outside.
 
@@ -214,17 +214,70 @@ URL: http://127.0.0.1:8080/function/nodeinfo
 
 This app can be seen in the UI & App Response can be observed on the call.
 
-![](screenshots/UI NodeInfo App.png)
+![](screenshots/UI_NodeInfo_App.png)
 
-![](screenshots/NodeInfo Call.png)
+![](screenshots/NodeInfo_Call.png)
 
 # Deploy the GoLang based HTTP Echo Function
 
-to be done
+Inside the functions directory, initialize the function with pulling the template
+
+```bash
+faas template store pull golang-http
+faas new --lang golang-http go-http-echo
+```
+
+Build the Docker Image Locally. Since I am running a single node cluster, the docker image built will be locally present, for multi-node cluster or proper deployments make sure to push the image to Registry or DockerHub with proper prerequisites of login creds. You can use "faas-cli push" to push to remote repo.
+
+```bash
+cd functions
+faas-cli build -f go-http-echo.yml
+
+docker images
+REPOSITORY                           TAG                 IMAGE ID            CREATED             SIZE
+subodhp/go-http-echo                         latest              0de669751925        2 minutes ago       25.1MB
+<output snipped>
+```
+Login to Registry, in my case I am using public DockerHub Repo.
+
+```bash
+docker login
+<perform successful login>
+
+faas-cli push -f go-http-echo.yml 
+[0] > Pushing go-http-echo [subodhp/go-http-echo:latest].
+The push refers to repository [docker.io/subodhp/go-http-echo]
+<output snipped>
+```
+
+Deploy the function.
+
+```bash
+faas-cli deploy -f go-http-echo.yml 
+Deploying: go-http-echo.
+WARNING! Communication is not secure, please consider using HTTPS. Letsencrypt.org offers free SSL/TLS certificates.
+
+Deployed. 202 Accepted.
+URL: http://127.0.0.1:8080/function/go-http-echo.openfaas-fn
+```
+
+Invoke the function via CLI.
+
+```bash
+echo -n "test" | faas-cli invoke go-http-echo
+```
+
+To remove the deployed function.
+
+```bash
+faas-cli remove -f go-http-echo.yml
+```
 
 # References
 * https://docs.openfaas.com/deployment/kubernetes/
-
+* https://hub.docker.com/repository/docker/subodhp/go-http-echo
+* https://blog.alexellis.io/serverless-golang-with-openfaas/
+* https://github.com/openfaas-incubator/golang-http-template
 
 # Maintainer
 
