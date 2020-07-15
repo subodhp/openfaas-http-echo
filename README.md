@@ -1,4 +1,7 @@
+# openfaas-http-echo
+
 - [openfaas-http-echo](#openfaas-http-echo)
+- [Introduction](#introduction)
 - [Prerequisites](#prerequisites)
   - [Install OpenFaaS](#install-openfaas)
   - [OpenFaaS Installation on Kubernetes](#openfaas-installation-on-kubernetes)
@@ -9,7 +12,7 @@
 - [References](#references)
 - [Maintainer](#maintainer)
 
-# openfaas-http-echo
+# Introduction
 
 Sample OpenFaaS App on K8s which Reflects/Echo's the HTTP Data based on GoLang for Testing
 
@@ -272,6 +275,44 @@ To remove the deployed function.
 ```bash
 faas-cli remove -f go-http-echo.yml
 ```
+
+Output of the function which includes headers from the requestor. It can be seen that for various clients, the fields are detected and responded by the function.
+
+Using OpenFaaS CLI -
+
+```bash
+echo -n "test" | faas-cli invoke go-http-echo
+Handling connection for 8080
+Hello world, input was: test
+Headers Received from Caller: 
+Accept-Encoding: gzip
+Content-Type: text/plain
+X-Forwarded-For: 127.0.0.1:55340
+X-Forwarded-Host: 127.0.0.1:8080
+User-Agent: Go-http-client/1.1
+```
+
+Using CURL -
+
+```bash
+curl -d test -X POST -H "test-header: subodh" http://127.0.0.1:8080/function/go-http-echo
+Handling connection for 8080
+Hello world, input was: test
+Headers Received from Caller: 
+User-Agent: curl/7.68.0
+Accept: */*
+Accept-Encoding: gzip
+Content-Type: application/x-www-form-urlencoded
+Test-Header: subodh
+X-Forwarded-For: 127.0.0.1:59804
+X-Forwarded-Host: 127.0.0.1:8080
+```
+
+Invocation via UI - 
+
+![](screenshots/headers_gui.png)
+
+Success!
 
 # References
 * https://docs.openfaas.com/deployment/kubernetes/
