@@ -232,6 +232,14 @@ X-Forwarded-Host: 127.0.0.1:8080
 User-Agent: Go-http-client/1.1
 ```
 
+**Access the OpenFaaS Gateway over NodePort for External Access**
+
+```bash
+echo -n "test" | faas-cli invoke --gateway http://127.0.0.1:31112 go-http-echo
+```
+
+The port 31112 may vary depending upon your gateway-external service port.
+
 Using CURL -
 
 ```bash
