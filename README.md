@@ -40,81 +40,14 @@ Make sure that the host on which you are going to run the following Arkade comma
 
 ```bash
 arkade install openfaas
-
-Using kubeconfig: /home/ninja/.kube/config
-Using helm3
-Node architecture: "amd64"
-Client: "x86_64", "Linux"
-2020/07/14 02:45:09 User dir established as: /home/ninja/.arkade/
-https://get.helm.sh/helm-v3.1.2-linux-amd64.tar.gz
-/home/ninja/.arkade/bin/helm3/linux-amd64 linux-amd64/
-/home/ninja/.arkade/bin/helm3/helm linux-amd64/helm
-/home/ninja/.arkade/bin/helm3/README.md linux-amd64/README.md
-/home/ninja/.arkade/bin/helm3/LICENSE linux-amd64/LICENSE
-2020/07/14 02:45:14 extracted tarball into /home/ninja/.arkade/bin/helm3: 3 files, 0 dirs (2.821189776s)
-"openfaas" has been added to your repositories
-
-Hang tight while we grab the latest from your chart repositories...
-...Successfully got an update from the "openfaas" chart repository
-Update Complete. ⎈ Happy Helming!⎈ 
-VALUES values.yaml
-Command: /home/ninja/.arkade/bin/helm3/helm [upgrade --install openfaas openfaas/openfaas --namespace openfaas --values /tmp/charts/openfaas/values.yaml --set gateway.replicas=1 --set queueWorker.replicas=1 --set queueWorker.maxInflight=1 --set serviceType=NodePort --set gateway.directFunctions=true --set openfaasImagePullPolicy=IfNotPresent --set basicAuthPlugin.replicas=1 --set ingressOperator.create=false --set basic_auth=true --set clusterRole=false --set operator.create=false --set faasnetes.imagePullPolicy=Always]
-Release "openfaas" does not exist. Installing it now.
-NAME: openfaas
-LAST DEPLOYED: Tue Jul 14 02:45:20 2020
-NAMESPACE: openfaas
-STATUS: deployed
-REVISION: 1
-TEST SUITE: None
-NOTES:
-To verify that openfaas has started, run:
-
-  kubectl -n openfaas get deployments -l "release=openfaas, app=openfaas"
-=======================================================================
-= OpenFaaS has been installed.                                        =
-=======================================================================
-
-# Get the faas-cli
-curl -SLsf https://cli.openfaas.com | sudo sh
-
-# Forward the gateway to your machine
-kubectl rollout status -n openfaas deploy/gateway
-kubectl port-forward -n openfaas svc/gateway 8080:8080 &
-
-# If basic auth is enabled, you can now log into your gateway:
-PASSWORD=$(kubectl get secret -n openfaas basic-auth -o jsonpath="{.data.basic-auth-password}" | base64 --decode; echo)
-echo -n $PASSWORD | faas-cli login --username admin --password-stdin
-
-faas-cli store deploy figlet
-faas-cli list
-
-# For Raspberry Pi
-faas-cli store list \
- --platform armhf
-
-faas-cli store deploy figlet \
- --platform armhf
-
-# Find out more at:
-# https://github.com/openfaas/faas
-
-Thanks for using arkade!
+<output snipped>
 ```
 
 To validate the components on K8s Cluster 
 
 ```bash
-kubectl get pods --all-namespaces
+kubectl get pods -n openfaas
 NAMESPACE     NAME                                       READY   STATUS    RESTARTS   AGE
-kube-system   calico-kube-controllers-76d4774d89-2htfs   1/1     Running   0          5h47m
-kube-system   canal-2pzlm                                2/2     Running   0          5h47m
-kube-system   coredns-66bff467f8-4f8s8                   1/1     Running   0          5h47m
-kube-system   coredns-66bff467f8-fr9s8                   1/1     Running   0          5h47m
-kube-system   etcd-ninja-host                            1/1     Running   0          5h47m
-kube-system   kube-apiserver-ninja-host                  1/1     Running   0          5h47m
-kube-system   kube-controller-manager-ninja-host         1/1     Running   0          5h47m
-kube-system   kube-proxy-cjvg4                           1/1     Running   0          5h47m
-kube-system   kube-scheduler-ninja-host                  1/1     Running   0          5h47m
 openfaas      alertmanager-57bd4559d7-59nxz              1/1     Running   0          3m33s
 openfaas      basic-auth-plugin-7d4956689b-68wh6         1/1     Running   0          3m33s
 openfaas      faas-idler-b85f98fb7-lcx7r                 1/1     Running   2          3m33s
@@ -122,6 +55,13 @@ openfaas      gateway-59b667b794-crncr                   2/2     Running   0    
 openfaas      nats-5cd4dff7c8-8gkl9                      1/1     Running   0          3m33s
 openfaas      prometheus-bcc84d4d5-btxrc                 1/1     Running   0          3m33s
 openfaas      queue-worker-6cb888d49c-2qh6q              1/1     Running   3          3m33s
+```
+
+**Login to OpenFaaS CLI**
+
+```bash
+PASSWORD=$(kubectl get secret -n openfaas basic-auth -o jsonpath="{.data.basic-auth-password}" | base64 --decode; echo)
+echo -n $PASSWORD | faas-cli login --username admin --password-stdin
 ```
 
 ## Access the OpenFaaS Infra
